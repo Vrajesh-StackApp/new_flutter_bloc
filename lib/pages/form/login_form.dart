@@ -15,7 +15,25 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _emailFocusNode = FocusNode();
+  final _passwordFocusNode = FocusNode();
   bool isObscureText = false;
+
+  @override
+  void initState() {
+    _emailFocusNode.addListener(() {
+      if(!_emailFocusNode.hasFocus){
+        context.read<LoginFormBloc>().add(EmailUnfocused());
+        FocusScope.of(context).requestFocus(_passwordFocusNode);
+      }
+    });
+    _passwordFocusNode.addListener(() {
+      if(!_passwordFocusNode.hasFocus){
+        context.read<LoginFormBloc>().add(PasswordUnfocused());
+      }
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -35,14 +53,19 @@ class _LoginPageState extends State<LoginPage> {
 
   Widget? _loginBody() => BlocListener<LoginFormBloc, LoginFormState>(
         listener: (context, state) {
+
+          debugPrint("State ==>< ${state.status}");
+          debugPrint("State ==>< ${state.email}");
+          debugPrint("State ==>< ${state.password}");
+
           if (state.status.isSubmissionSuccess) {
             ScaffoldMessenger.of(context).hideCurrentSnackBar();
-            showDialog(context: context, builder: (context) => successDialog());
+            Navigator.pop(context);
+            showDialog(barrierDismissible: false,context: context, builder: (context) => successDialog());
           }
           if (state.status.isSubmissionInProgress) {
-            ScaffoldMessenger.of(context)
-              ..hideCurrentSnackBar()
-              ..showSnackBar(const SnackBar(content: Text("Submitting...")));
+            ScaffoldMessenger.of(context).hideCurrentSnackBar();
+            showDialog(barrierDismissible: false,context: context, builder: (context) => progressDialog());
           }
         },
         child: BlocBuilder<LoginFormBloc, LoginFormState>(
@@ -58,10 +81,13 @@ class _LoginPageState extends State<LoginPage> {
                     children: [
                       TextFormField(
                         initialValue: state.email.value,
+                        focusNode: _emailFocusNode,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(30),
                         ],
-                        onChanged: (value) => context.read<LoginFormBloc>().add(EmailChanged(email: value)),
+                        onChanged: (value) {
+                          context.read<LoginFormBloc>().add(EmailChanged(email: value));
+                        },
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           errorText: state.email.invalid ? "Please ensure the email entered is valid" : null,
@@ -78,11 +104,14 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       TextFormField(
                         initialValue: state.password.value,
+                        focusNode: _passwordFocusNode,
                         obscureText: isObscureText,
                         inputFormatters: [
                           LengthLimitingTextInputFormatter(20),
                         ],
-                        onChanged: (value) => context.read<LoginFormBloc>().add(PasswordChanged(password: value)),
+                        onChanged: (value) {
+                          context.read<LoginFormBloc>().add(PasswordChanged(password: value));
+                        },
                         keyboardType: TextInputType.text,
                         decoration: InputDecoration(
                           errorText: state.password.invalid ? "Password should be at least 8 characters with at least one letter and number" : null,
@@ -106,7 +135,10 @@ class _LoginPageState extends State<LoginPage> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () => state.status.isValidated ? context.read<LoginFormBloc>().add(FormSubmitted()) : null,
+                          onPressed: () {
+                            debugPrint("Hello");
+                            context.read<LoginFormBloc>().add(FormSubmitted());
+                          },
                           child: const Text("Login"),
                           style: ElevatedButton.styleFrom(elevation: 5.0, padding: const EdgeInsets.symmetric(vertical: 15)),
                         ),
@@ -152,4 +184,17 @@ class _LoginPageState extends State<LoginPage> {
           ),
         ),
       );
+
+  progressDialog() => Container(
+    padding: const EdgeInsets.all(8.0),
+    child: const Center(
+      child: Card(
+        elevation: 5,
+        child: Padding(
+          padding: EdgeInsets.all(15),
+          child: CircularProgressIndicator(),
+        ),
+      ),
+    ),
+  );
 }

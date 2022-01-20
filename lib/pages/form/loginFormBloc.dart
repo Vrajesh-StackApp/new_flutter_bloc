@@ -35,7 +35,7 @@ class LoginFormBloc extends Bloc<LoginFormEvent, LoginFormState> {
 
     emit(state.copyWith(
       password: password.valid ? password : Password.pure(event.password),
-      status: Formz.validate([state.email, password]),
+        status: Formz.validate([state.email, password]),
     ));
   }
 
@@ -58,16 +58,20 @@ class LoginFormBloc extends Bloc<LoginFormEvent, LoginFormState> {
   }
 
   Future<void> _onFormSubmitted(FormSubmitted event, Emitter<LoginFormState> emit) async {
-    final email = Email.dirty(state.password.value);
+    final email = Email.dirty(state.email.value);
     final password = Password.dirty(state.password.value);
+
+    debugPrint("email -> $email");
+    debugPrint("password -> $password");
 
     emit(state.copyWith(
       email: email,
       password: password,
       status: Formz.validate([email, password]),
     ));
-
+    debugPrint("state.status.isValidated 1 -> ${state.status.isValidated}");
     if (state.status.isValidated) {
+      debugPrint("state.status.isValidated ==> ${state.status.isValidated}");
       emit(state.copyWith(status: FormzStatus.submissionInProgress));
       await Future.delayed(const Duration(seconds: 1));
       emit(state.copyWith(status: FormzStatus.submissionSuccess));
