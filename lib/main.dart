@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:new_flutter_bloc/common/app_string.dart';
 import 'package:new_flutter_bloc/pages/counter/counter_page.dart';
+import 'package:new_flutter_bloc/pages/form/loginFormBloc.dart';
 import 'package:new_flutter_bloc/pages/form/login_form.dart';
 import 'package:new_flutter_bloc/pages/home/home_page.dart';
 import 'package:new_flutter_bloc/pages/counter/counter_bloc.dart';
@@ -18,11 +19,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (BuildContext context) {
-            return CounterBloc();
-          },
-        ),
+        BlocProvider(create: (context) => CounterBloc()),
+        BlocProvider(create: (context) => LoginFormBloc()),
       ],
       child: MaterialApp(
         title: 'Flutter Demo',
