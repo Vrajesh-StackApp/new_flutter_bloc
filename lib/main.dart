@@ -6,6 +6,7 @@ import 'package:new_flutter_bloc/pages/form/loginFormBloc.dart';
 import 'package:new_flutter_bloc/pages/form/login_form.dart';
 import 'package:new_flutter_bloc/pages/home/home_page.dart';
 import 'package:new_flutter_bloc/pages/counter/counter_bloc.dart';
+import 'package:new_flutter_bloc/pages/stream/stream_ticker_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -33,6 +34,7 @@ class MyApp extends StatelessWidget {
           AppString.homePage: (context) => const HomePage(),
           AppString.counterPage: (context) => const CounterPage(),
           AppString.loginPage: (context) => const LoginPage(),
+          AppString.streamPage: (context) => const StreamTickerPage(),
         },
       ),
     );

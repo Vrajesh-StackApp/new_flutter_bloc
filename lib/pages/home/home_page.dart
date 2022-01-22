@@ -51,6 +51,16 @@ class _HomePageState extends State<HomePage> {
                 elevation: 5.0,
               ),
             ),
+            const SizedBox(height: 10,),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.pushNamed(context, AppString.streamPage);
+              },
+              child: Text(AppString.stream),
+              style: ElevatedButton.styleFrom(
+                elevation: 5.0,
+              ),
+            ),
           ],
         ),
       );
